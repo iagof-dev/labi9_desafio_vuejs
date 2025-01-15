@@ -1,0 +1,36 @@
+:root{
+    --background-color: #FFFFFF;
+    --primary-color: #059669;
+    --secondary-color: #10B981;
+    --text-color-primary: #334155;
+    --text-color-secondary: #94A3B8;
+    --text-color-alt: #475599;
+}
+
+body{
+    background-color: var(--background-color);
+}
+
+.text-primary-color{
+    color: var(--text-color-primary);
+}
+
+.text-secondary-color{
+    color: var(--text-color-secondary);
+}
+
+.text-primary-alt{
+    color: var(--text-color-alt);
+}
+
+.color-base{
+    color: var(--background-color);
+}
+
+.color-primary-bg{
+    background-color: var(--primary-color);
+}
+
+.color-secondary-bg{
+    background-color: var(--secondary-color);
+}
