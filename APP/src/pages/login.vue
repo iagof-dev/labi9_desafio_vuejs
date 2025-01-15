@@ -3,10 +3,10 @@
         <div class="flex flex-col place-items-center h-[90%]">
             <div class="m-auto">
                 <div class="bg-bg-primary block w-[520px] h-[450px]  shadow-lg border-gray-100 rounded-lg py-24">
-                    <form class="w-full">
+                    <form action="/dashboard" class="w-full" v-on:submit="submitForm">
                         <h1 class="text-2xl font-bold text-center">Entrar</h1>
                         <div class="place-items-center">
-                            <span class="hidden text-red-600 font-medium">E-mail ou Senha incorreta</span>
+                            <span v-if="showErrorMessage" class="text-red-600 font-medium">{{ errorMessage }}</span>
                             <div class="py-1">
                                 <input v-model="email" type="email" required placeholder="Email"
                                     class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
@@ -20,8 +20,8 @@
                                     class="w-4 h-4 text-blue-600 transition-all rounded">
                                 <label for="remember" class="pl-1 text-sm font-medium">Lembrar-me</label>
                             </div>
-                            <div class="w-1/3"><button @click="login"
-                                    class="bg-primary-color hover:bg-secondary-color transition-all text-white p-2 my-1 px-12 rounded-lg w-full font-medium">Entrar</button>
+                            <div class="w-1/3"><input type="submit" value="Entrar"
+                                    class="bg-primary-color hover:bg-secondary-color w-full hover:cursor-pointer transition-all text-white p-2 text-center my-2 rounded-lg font-medium" />
                             </div>
                             <div>
                                 <h1 class="text-center">Não possui registro? <a href="/register"><span
@@ -35,4 +35,41 @@
         </div>
     </div>
 </template>
+
+
+<script>
+import API from '../helpers/api';
+
+
+var api = new API;
+export default{
+    data(){
+        return{
+            email: '',
+            password: '',
+            showErrorMessage: false,
+            errorMessage: ''
+        }
+    },
+    methods:{
+        async submitForm(e){
+            e.preventDefault();
+            if(this.email != '' && this.password != ''){
+                var response = await api.authenticate(this.email, this.password);
+                if(response.status == true){
+                    e.target.submit();
+                    return;
+                }
+                this.showErrorMessage = true;
+                this.errorMessage = response.message;
+            }
+           
+            
+        }
+    }
+};
+
+
+</script>
+
 

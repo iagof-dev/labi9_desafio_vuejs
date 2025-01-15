@@ -3,25 +3,25 @@
         <div class="flex flex-col place-items-center h-[90%]">
             <div class="m-auto">
                 <div class="bg-bg-primary block w-[520px] h-[450px] shadow-lg border-gray-100 rounded-lg py-24">
-                    <form class="w-full" v-on:submit="submitForm">
+                    <form action="/" class="w-full" v-on:submit="submitForm">
                         <h1 class="text-2xl font-bold w-full text-center">Registrar</h1>
                         <div class="place-items-center">
-                            <span class="hidden text-red-600 font-medium">E-mail ou Senha incorreta</span>
+                            <span v-if="showErrorMessage" class="text-red-600 font-medium">{{ errorMessage }}</span>
                             <div class="py-1">
                                 <input v-model="name" type="text" required placeholder="Nome"
-                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" value="a" />
+                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
                             </div>
                             <div class="py-1">
                                 <input v-model="email" type="email" required placeholder="Email"
-                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" value="x@x.com" />
+                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md"  />
                             </div>
                             <div class="py-1">
                                 <input v-model="password" type="password" required placeholder="Senha"
-                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" value="123" />
+                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
                             </div>
                             <div class="py-1">
                                 <input v-model="confirmpassword" type="password" required placeholder="Confirme a senha"
-                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" value="123" />
+                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md"  />
                             </div>
                             <div class="w-1/3"><input type="submit" value="Registrar"
                                     class="bg-primary-color hover:bg-secondary-color w-full hover:cursor-pointer transition-all text-white p-2 text-center my-2 rounded-lg font-medium" />
@@ -49,17 +49,22 @@ export default{
         return{
             email: '',
             password: '',
-            confirmpassword: ''
+            confirmpassword: '',
+            showErrorMessage: false,
+            errorMessage: ''
         }
     },
     methods:{
         async submitForm(e){
             e.preventDefault();
             if(this.name != '' && this.email != '' && this.password != '' && this.confirmpassword == this.password){
-                var response = await api.register(this.name, this.email, this.password, this.confirmpassword);
-                if(response == true){
+                var response = await api.registerAccount(this.name, this.email, this.password, this.confirmpassword);
+                if(response.status == true){
                     e.target.submit();
+                    return;
                 }
+                this.showErrorMessage = true;
+                this.errorMessage = response.message;
             }
            
             
