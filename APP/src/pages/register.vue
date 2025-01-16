@@ -75,9 +75,8 @@ export default{
             }
         }
     },
-    mounted(){
-        let value = api.getCookie('auth_key');
-        if (value != null && value != '' && value != ' ') {
+    async mounted(){
+        if (await api.isValidSession()) {
             window.location.href = '/dashboard';
         }
     }

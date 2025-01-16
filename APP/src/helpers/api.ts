@@ -2,19 +2,52 @@ class API {
   private url: string =
     "https://challenge-labi9-4b4c472d5c07.herokuapp.com/api";
 
-    async MakePostRequest(endpoint : string, data : string){
-      let response = await fetch(this.url + endpoint, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: data
-      });
-  
-      if(response.ok){
-        return {status: true, message: 'success', data: await response.json()};
+    async MakePostRequest(endpoint : string, data : any){
+
+      let headerSettings : { [key: string]: string } = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+
+      if(this.getCookie('auth_key') != null){
+        headerSettings["Authorization"] = `Bearer ${this.getCookie('auth_key')}`;
       }
+
+      let request = await fetch(this.url + endpoint, {
+        method: "POST",
+        headers: headerSettings,
+        body: JSON.stringify(data),
+      });
+
+      let response = await request.json();
+
+      console.log(response);
+
+      return response;
+    }
+
+    async MakeGetRequest(endpoint : string){
+
+      let headerSettings : { [key: string]: string } = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+
+      if(this.getCookie('auth_key') != null){
+        headerSettings["Authorization"] = `Bearer ${this.getCookie('auth_key')}`;
+      }
+
+
+      let request = await fetch(this.url + endpoint, {
+        method: "GET",
+        headers: headerSettings,
+      });
+
+      let response = await request.json();
+
+      console.log(response);
+
+      return response;
     }
 
   async registerAccount(
@@ -22,42 +55,23 @@ class API {
     inputEmail: string,
     inputPass: string,
     inputConfirmationPass: string
-  ): Promise<{ status: boolean; message: string }> {
-    let response = await fetch(this.url + "/auth/register", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: inputName,
-        email: inputEmail,
-        password: inputPass,
-        password_confirmation: inputConfirmationPass,
-      }),
-    });
+  ){
+    let response = await this.MakePostRequest("/auth/register", {'name': inputName, 'email': inputEmail, 'password': inputPass, 'password_confirmation': inputConfirmationPass});
 
-    //201 - sucesso
-    //422 - erro
-    const requestStatusCode: number = response.status;
+    if (response.data && response.data.message && response.data.message.includes('Created')) {
+      return { status: true, message: response.data.message };
+  }
+  
+  if (response.errors && response.errors.email && response.errors.email[0].includes('The email has already been taken')) {
+      return { status: false, message: 'E-mail já cadastrado' };
+  }
 
-    let data = await response.json();
+  if (response.errors && response.errors.password && response.errors.password[0].includes('The password field must be between 8 and 32 characters')) {
+    return { status: false, message: 'A senha deve ter entre 8 e 32 caracteres' };
+}
+  
+  return { status: false, message: 'Erro desconhecido' };
 
-    if (requestStatusCode === 201) {
-      if (data.data?.message === "Created") {
-        return { status: true, message: "Usuário cadastrado com sucesso" };
-      }
-    }
-    let responseMessage : string = '';
-
-    if(data.message.includes('The email has already been taken.')){
-        responseMessage = 'E-mail já cadastrado.';
-    }
-    
-    if(data.message.includes('The password field must be between 8 and 32 characters')){
-        responseMessage = 'Senha deve ter entre 8 e 32 caracteres.';
-    }
-    return { status: false, message: responseMessage };
   }
 
   setCookie(key: string, value: string, days: number): void {
@@ -66,15 +80,17 @@ class API {
     const expires = `expires=${date.toUTCString()}`;
     document.cookie = `${key}=${encodeURIComponent(value)}; ${expires}; path=/`;
   }
+
+
   getCookie(key: string): string | null {
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookieArr = decodedCookie.split(";");
 
     for (let i = 0; i < cookieArr.length; i++) {
       let cookie = cookieArr[i].trim();
-      if (cookie.startsWith(key + "=")) {
+      if (cookie.startsWith(key + "="))
         return cookie.substring(key.length + 1);
-      }
+    
     }
     return null;
   }
@@ -82,30 +98,40 @@ class API {
   async authenticate(
     inputEmail: string,
     inputPass: string
-  ): Promise<{ status: boolean; message: string }> {
-    let response = await fetch(this.url + "/auth/login", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: inputEmail,
-        password: inputPass,
-      }),
-    });
+  ){
 
-    //201 - sucesso
-    //422 - erro
-    const requestStatusCode: number = response.status;
+    let response = await this.MakePostRequest("/auth/login", {email: inputEmail, password: inputPass});
 
-    if(requestStatusCode != 201 && requestStatusCode != 200) {
-      return { status: false, message: "Usuário ou senha inválidos" };
-    }
+    let data = response;
 
-    let data = await response.json();
+    if(data && data.error && data.error.includes('Unauthorized'))
+      return { status: false, message: 'E-mail ou senha incorretos'};
+    
+
     this.setCookie("auth_key", data.data.token, 1);
     return { status: true, message: ''};
+  }
+
+  async isValidSession() : Promise<Boolean>{
+    if(this.getCookie('auth_key') == null)
+      return false;
+
+    let request = await this.MakeGetRequest('/auth/me');
+
+    if(request.data && request.data.name && request.data.created_at)
+      return true;
+
+    return false;
+  }
+
+  async accountLogout(){
+    await fetch(this.url + "/auth/logout", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${this.getCookie('auth_key')}`,
+      },
+    });
   }
 }
 

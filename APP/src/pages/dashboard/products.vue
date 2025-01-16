@@ -1,9 +1,6 @@
 <script>
 import API from '../../helpers/api';
 import SideBarMenu from '../../components/sidebar/sidebar.vue';
-
-
-
 let api = new API;
 export default {
     data() {
@@ -29,7 +26,7 @@ export default {
             <SideBarMenu />
         </div>
         <div class="p-6">
-            <h1>Inicio</h1>
+            <h1>Produtos</h1>
         </div>
     </div>
 </template>

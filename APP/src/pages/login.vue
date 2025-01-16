@@ -18,11 +18,11 @@
                                 <input v-model="password" required type="password" placeholder="Senha"
                                     class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
                             </div>
-                            <div class="flex items-center pt-1">
+                            <!-- <div class="flex items-center pt-1">
                                 <input name="remember" type="checkbox"
                                     class="w-4 h-4 text-blue-600 transition-all rounded">
                                 <label for="remember" class="pl-1 text-sm font-medium">Lembrar-me</label>
-                            </div>
+                            </div> -->
                             <div class="w-1/3"><input type="submit" value="Entrar"
                                     class="bg-primary-color hover:bg-secondary-color w-full hover:cursor-pointer transition-all text-white p-2 text-center my-2 rounded-lg font-medium" />
                             </div>
@@ -70,9 +70,8 @@ export default{
             
         }
     },
-    mounted(){
-        let value = api.getCookie('auth_key');
-        if (value != null && value != '' && value != ' ') {
+    async mounted(){
+        if (await api.isValidSession()) {
             window.location.href = '/dashboard';
         }
     }

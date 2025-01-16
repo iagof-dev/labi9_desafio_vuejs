@@ -29,7 +29,7 @@ export default {
             <SideBarMenu />
         </div>
         <div class="p-6">
-            <h1>Inicio</h1>
+            <h1>Categorias</h1>
         </div>
     </div>
 </template>
