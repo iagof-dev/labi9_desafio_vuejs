@@ -116,6 +116,8 @@ class API {
     if(this.getCookie('auth_key') == null)
       return false;
 
+    console.log(this.getCookie('auth_key'));
+
     let request = await this.MakeGetRequest('/auth/me');
 
     if(request.data && request.data.name && request.data.created_at)
@@ -132,6 +134,12 @@ class API {
         "Authorization": `Bearer ${this.getCookie('auth_key')}`,
       },
     });
+  }
+
+  async getCategories(){
+    let response = await this.MakeGetRequest('/categories');
+
+    return response;
   }
 }
 
