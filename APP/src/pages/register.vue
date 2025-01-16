@@ -2,11 +2,18 @@
     <div class="h-screen w-screen bg-bg-color-alt">
         <div class="flex flex-col place-items-center h-[90%]">
             <div class="m-auto">
-                <div class="bg-bg-primary block w-[520px] h-[450px] shadow-lg border-gray-100 rounded-lg py-24">
+                <div class="bg-bg-primary block w-[520px] h-[450px] shadow-lg border-gray-100 rounded-lg py-2">
+                    <div class="w-auto h-32 -mb-6 place-items-center">
+                        <img src="/assets/imgs/logo.webp" alt="Logo" class="h-3/4">
+                    </div>
                     <form action="/" class="w-full" v-on:submit="submitForm">
                         <h1 class="text-2xl font-bold w-full text-center">Registrar</h1>
                         <div class="place-items-center">
-                            <span v-if="showErrorMessage" class="text-red-600 font-medium">{{ errorMessage }}</span>
+
+                            <span v-if="showErrorMessage" class="text-red-600 font-medium">
+                                {{ errorMessage }}
+                            </span>
+
                             <div class="py-1">
                                 <input v-model="name" type="text" required placeholder="Nome"
                                     class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
@@ -66,8 +73,12 @@ export default{
                 this.showErrorMessage = true;
                 this.errorMessage = response.message;
             }
-           
-            
+        }
+    },
+    mounted(){
+        let value = api.getCookie('auth_key');
+        if (value != null && value != '' && value != ' ') {
+            window.location.href = '/dashboard';
         }
     }
 };

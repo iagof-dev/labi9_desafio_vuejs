@@ -2,6 +2,21 @@ class API {
   private url: string =
     "https://challenge-labi9-4b4c472d5c07.herokuapp.com/api";
 
+    async MakePostRequest(endpoint : string, data : string){
+      let response = await fetch(this.url + endpoint, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: data
+      });
+  
+      if(response.ok){
+        return {status: true, message: 'success', data: await response.json()};
+      }
+    }
+
   async registerAccount(
     inputName: string,
     inputEmail: string,
@@ -38,6 +53,7 @@ class API {
     if(data.message.includes('The email has already been taken.')){
         responseMessage = 'E-mail já cadastrado.';
     }
+    
     if(data.message.includes('The password field must be between 8 and 32 characters')){
         responseMessage = 'Senha deve ter entre 8 e 32 caracteres.';
     }
@@ -88,11 +104,7 @@ class API {
     }
 
     let data = await response.json();
-
-    console.log(data);
-
     this.setCookie("auth_key", data.data.token, 1);
-
     return { status: true, message: ''};
   }
 }
