@@ -31,7 +31,7 @@ export default{
     async mounted(){
         // verificação se a sessão é válida para evitar login duplicado
         if (await api.isValidSession()) {
-            window.location.href = '/dashboard';
+            window.location.href = '/dashboard/products';
         }
     }
 };
@@ -43,7 +43,7 @@ export default{
             <div class="w-full flex justify-center mb-6">
                 <img src="/assets/imgs/logo.webp" alt="Logo" class="h-20">
             </div>
-            <form action="/dashboard" class="w-full" v-on:submit="submitForm">
+            <form action="/dashboard/products" class="w-full" v-on:submit="submitForm">
                 <h1 class="text-2xl font-bold text-center text-primary-color mb-6 -mt-7">Entrar</h1>
                 <div class="space-y-4">
                     

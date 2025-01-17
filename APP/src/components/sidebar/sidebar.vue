@@ -19,7 +19,7 @@ export default {
   </div>
 
   <nav class="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
-    <sidebarMenuItem icon="/assets/icons/home.svg" title="Inicio" redirect="/dashboard" />
+    <sidebarMenuItem icon="/assets/icons/home.svg" title="Inicio" redirect="" />
     <sidebarMenuItem icon="/assets/icons/box.svg" title="Produtos" redirect="/dashboard/products" />
     <sidebarMenuItem icon="/assets/icons/tag.svg" title="Categorias" redirect="/dashboard/categories" />
     <sidebarMenuItem icon="/assets/icons/door.svg" title="Sair" redirect="/logout" />
