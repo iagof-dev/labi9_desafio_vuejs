@@ -1,3 +1,7 @@
+#### Tempo de projeto:
+
+[![wakatime](https://wakatime.com/badge/user/018e1f5e-85ee-4d1b-9e0e-ed450cf40324/project/69d8f9f4-0023-455e-802c-ccc02c69b4d7.svg)](https://wakatime.com/badge/user/018e1f5e-85ee-4d1b-9e0e-ed450cf40324/project/69d8f9f4-0023-455e-802c-ccc02c69b4d7)
+
 # Desafio Labi9 Frontend - Vue 3
 
 
