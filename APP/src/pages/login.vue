@@ -1,45 +1,3 @@
-<template>
-    <div id="app" class="h-screen w-screen bg-bg-color-alt">
-        <div class="flex flex-col place-items-center h-[90%]">
-            <div class="m-auto">
-                <div class="bg-bg-primary block w-[520px] h-[450px]  shadow-lg border-gray-100 rounded-lg py-12">
-                    <div class="w-auto h-32 -mb-6 place-items-center">
-                        <img src="/assets/imgs/logo.webp" alt="Logo" class="h-3/4">
-                    </div>
-                    <form action="/dashboard" class="w-full" v-on:submit="submitForm">
-                        <h1 class="text-2xl font-bold text-center">Entrar</h1>
-                        <div class="place-items-center">
-                            <span v-if="showErrorMessage" class="text-red-600 font-medium">{{ errorMessage }}</span>
-                            <div class="py-1">
-                                <input v-model="email" type="email" required placeholder="Email"
-                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
-                            </div>
-                            <div class="py-1">
-                                <input v-model="password" required type="password" placeholder="Senha"
-                                    class="border-2 bg-primary w-full text-primary-color p-2 rounded-md" />
-                            </div>
-                            <!-- <div class="flex items-center pt-1">
-                                <input name="remember" type="checkbox"
-                                    class="w-4 h-4 text-blue-600 transition-all rounded">
-                                <label for="remember" class="pl-1 text-sm font-medium">Lembrar-me</label>
-                            </div> -->
-                            <div class="w-1/3"><input type="submit" value="Entrar"
-                                    class="bg-primary-color hover:bg-secondary-color w-full hover:cursor-pointer transition-all text-white p-2 text-center my-2 rounded-lg font-medium" />
-                            </div>
-                            <div>
-                                <h1 class="text-center">Não possui registro? <a href="/register"><span
-                                            class="text-blue-700 underline hover:cursor-pointer">clique
-                                            aqui</span></a></h1>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
-
-
 <script>
 import API from '../helpers/api';
 
@@ -59,7 +17,7 @@ export default{
             e.preventDefault();
             if(this.email != '' && this.password != ''){
                 var response = await api.authenticate(this.email, this.password);
-                if(response.status == true){
+                if(response.success == true){
                     e.target.submit();
                     return;
                 }
@@ -71,13 +29,53 @@ export default{
         }
     },
     async mounted(){
+        // verificação se a sessão é válida para evitar login duplicado
         if (await api.isValidSession()) {
             window.location.href = '/dashboard';
         }
     }
 };
-
-
 </script>
+
+<template>
+    <div id="app" class="h-screen w-screen bg-bg-color-alt flex items-center justify-center">
+        <div class="bg-bg-primary block w-[520px] h-[450px] shadow-lg border-gray-100 rounded-lg py-8 px-6">
+            <div class="w-full flex justify-center mb-6">
+                <img src="/assets/imgs/logo.webp" alt="Logo" class="h-20">
+            </div>
+            <form action="/dashboard" class="w-full" v-on:submit="submitForm">
+                <h1 class="text-2xl font-bold text-center text-primary-color mb-6 -mt-7">Entrar</h1>
+                <div class="space-y-4">
+                    
+                    <span v-if="showErrorMessage" class="text-red-600 font-medium text-center block mb-2">
+                        {{ errorMessage }}
+                    </span>
+
+                    <div class="relative">
+                        <input v-model="email" type="email" required placeholder="Email"
+                            class="border-2 bg-primary w-full text-primary-color p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-color transition-all" />
+                    </div>
+                    
+                    <div class="relative">
+                        <input v-model="password" required type="password" placeholder="Senha"
+                            class="border-2 bg-primary w-full text-primary-color p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-color transition-all" />
+                    </div>
+                    
+                    <div class="w-full">
+                        <input type="submit" value="Entrar"
+                            class="bg-primary-color hover:bg-secondary-color w-full p-3 rounded-lg text-white font-medium text-center cursor-pointer transition-all" />
+                    </div>
+
+                    <div class="text-center">
+                        <h2 class="text-base">
+                            Não possui registro? 
+                            <a href="/register" class="text-blue-700 underline hover:text-blue-500">clique aqui</a>
+                        </h2>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
 
 

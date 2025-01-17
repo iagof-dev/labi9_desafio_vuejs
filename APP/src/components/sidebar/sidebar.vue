@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-  <div class="flex items-center justify-center p-4 mb-2">
+  <div class="flex items-center justify-center">
     <img class="w-24 -mr-4 -ml-6" src="/assets/imgs/logo.webp" alt="Logo LABI9">
     <h5 class="text-xl font-sans font-semibold leading-snug tracking-normal text-blue-gray-900">
       Labi9 Desafio

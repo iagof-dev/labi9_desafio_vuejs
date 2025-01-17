@@ -59,18 +59,18 @@ class API {
     let response = await this.MakePostRequest("/auth/register", {'name': inputName, 'email': inputEmail, 'password': inputPass, 'password_confirmation': inputConfirmationPass});
 
     if (response.data && response.data.message && response.data.message.includes('Created')) {
-      return { status: true, message: response.data.message };
+      return { success: true, message: response.data.message };
   }
   
   if (response.errors && response.errors.email && response.errors.email[0].includes('The email has already been taken')) {
-      return { status: false, message: 'E-mail já cadastrado' };
+      return { success: false, message: 'E-mail já cadastrado' };
   }
 
   if (response.errors && response.errors.password && response.errors.password[0].includes('The password field must be between 8 and 32 characters')) {
-    return { status: false, message: 'A senha deve ter entre 8 e 32 caracteres' };
+    return { success: false, message: 'A senha deve ter entre 8 e 32 caracteres' };
 }
   
-  return { status: false, message: 'Erro desconhecido' };
+  return { success: false, message: 'Erro desconhecido' };
 
   }
 
@@ -95,6 +95,10 @@ class API {
     return null;
   }
 
+  getAPIUrl() : String{
+    return this.url;
+  }
+
   async authenticate(
     inputEmail: string,
     inputPass: string
@@ -105,11 +109,11 @@ class API {
     let data = response;
 
     if(data && data.error && data.error.includes('Unauthorized'))
-      return { status: false, message: 'E-mail ou senha incorretos'};
+      return { success: false, message: 'E-mail ou senha incorretos'};
     
 
     this.setCookie("auth_key", data.data.token, 1);
-    return { status: true, message: ''};
+    return { success: true, message: ''};
   }
 
   async isValidSession() : Promise<Boolean>{
@@ -126,21 +130,125 @@ class API {
     return false;
   }
 
-  async accountLogout(){
-    await fetch(this.url + "/auth/logout", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${this.getCookie('auth_key')}`,
-      },
-    });
-  }
-
-  async getCategories(){
+  async getAllCategories(){
     let response = await this.MakeGetRequest('/categories');
 
     return response;
   }
+
+  async createCategory(name: string) : Promise<Boolean>{
+    let response = await this.MakePostRequest('/categories', {'name': name});
+
+    if(response && response.errors) return false;
+      return true;
+  }
+
+  // async removeCategory(id : Number){
+  //   let response = await this.MakePostRequest(`/categories/${id}`, {});
+
+  //   if(response && response.errors) return false;
+  //     return true;
+  // }
+
+
+    async CategoryInformation(id : Number){
+      let response = await this.MakeGetRequest(`/categories/${id}`);
+
+      if(response && response.errors) return false;
+      
+      
+      return response;
+    }
+
+    async getProductsPerPage(page : Number){
+      let response = await this.MakeGetRequest(`/products?page=${page}&perPage=12`);
+
+      if(response && response.errors) return false;
+      
+      return response;
+    }
+
+    async getAllProducts(){
+      let response = await this.MakeGetRequest(`/products?page=1&perPage=99999`);
+
+      if(response && response.errors) return false;
+      
+      return response;
+    }
+
+    async createProduct(name : string, price : Number, category_id : Number, description : string){
+      let response = await this.MakePostRequest('/products', {'name': name, 'price': price, 'category_id': category_id, 'description': description});
+
+      if(response.errors && response.message.includes('The description field must be a string')) return {success: false, message: 'Descrição precisa ser um texto'};
+
+
+      return {success: true, message: ''};
+    }
+
+    async deleteProduct(id : Number){
+      
+      let headerSettings : { [key: string]: string } = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+
+      if(this.getCookie('auth_key') != null){
+        headerSettings["Authorization"] = `Bearer ${this.getCookie('auth_key')}`;
+      }
+
+
+      let request = await fetch(this.url + '/products/' + id, {
+        method: "DELETE",
+        headers: headerSettings,
+      });
+
+      if(request.status != 204) return false;
+
+      return true;
+    }
+
+
+    async getSpecificProduct (id : number){
+
+      console.log(this.url + '/products/id/' + id);
+
+      let request = await this.MakeGetRequest('/products/' + id);
+
+      if(request.message) return {success: false, message: request.message};
+
+      return {success: true, data: request.data};
+    }
+
+    async updateProduct(id : number, name : string, price : number, category_id : number, description : string){
+
+      let headerSettings : { [key: string]: string } = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+
+      if(this.getCookie('auth_key') != null){
+        headerSettings["Authorization"] = `Bearer ${this.getCookie('auth_key')}`;
+      }
+
+
+      let request = await fetch(this.url + '/products/' + id, {
+        method: "PUT",
+        headers: headerSettings,
+        body: JSON.stringify({'name': name, 'price': price, 'category_id': category_id, 'description': description}),
+      });
+
+      
+
+      let response = await request.json();
+
+      console.log(response);
+
+      if (response.message) return { success: false, message: response.message };
+      
+      return {success: true, message: ''};
+
+    }
+
 }
 
 export default API;
